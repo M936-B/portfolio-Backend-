@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const connectDB = require('./Config/dbConnect');
 connectDB();
 const cookieParser = require('cookie-parser');
+const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT;
 
 
@@ -14,22 +15,20 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
-//CUSTOM MIDDLEWARE
-// app.use();
-
 
 //ROUTES
+app.use( '/register', require('./routes/registration') );
+app.use( '/auth', require('./routes/login') );
+app.use( '/refresh', require('./routes/refresh') );
+app.use( '/logout', require('./routes/logout') );
 // app.use( '/', require('./routes/root') );
-// app.use( '/register', require('./routes/register') );
-// app.use( '/auth', require('./routes/auth') );
-// app.use( '/refresh', require('./routes/refresh') );
-// app.use( '/logout', require('./routes/logout') );
 
 
+app.use(verifyJWT); //CUSTOM MIDDLEWARE
 //API ROUTES
 app.use('/posts', require("./routes/API/posts"));
 app.use('/messages', require("./routes/API/messages"));
-// app.use('/', require("./routes/"));
+app.use('/users', require("./routes/API/users"));
 // app.use('/', require("./routes/"));
 
 
