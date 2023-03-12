@@ -4,7 +4,7 @@ const Post = require('../models/Post');
 const getPosts = async( req, res) => {
     try {
         const result = await Post.find();
-        if( !result || result.length === 0) return res.status(200).json({"message": "There's no data."})
+        if( !result || result.length === 0) return res.status(404).json({"message": "There's no data."})
         res.status(200).json(result);
     } catch (error) {
         console.error(error);
@@ -53,7 +53,7 @@ const deletePost = async( req, res) => {
         if( !postContent) return res.status(404).json({"message":"Data not present in the db"});
 
         const result = await postContent.deleteOne({ _id: req.body.id});
-        res.status(204).json(result);
+        res.status(204);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

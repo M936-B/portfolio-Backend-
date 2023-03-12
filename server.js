@@ -1,4 +1,4 @@
-//IMPORTS
+//BUILT-IN IMPORTS
 require('dotenv').config();
 const express = require('express');
 const app = express();
@@ -6,14 +6,44 @@ const mongoose = require('mongoose');
 const connectDB = require('./Config/dbConnect');
 connectDB();
 const cookieParser = require('cookie-parser');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+//CUSTOM IMPORTS
 const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT;
 
 
+const swaggerOptions = {
+    swaggerDefinition:{
+        openapi: "3.0.0",
+        info: {
+            title: "portfolio website",
+            description: "This is the backend for the portfolio website of Bryan",
+            contacts: {
+                name: "Bryan Murasira",
+                email: "bryanmurasira@gmail.com"
+            },
+            version: "1.0.0"
+        },
+        servers: [
+            {
+                url: "http://localhost:3500/",
+                description: "Development Server"
+            }
+        ],
+    },
+    apis: ["./routes/API/*.js"]
+}
+
+const specs = swaggerJsDoc(swaggerOptions);
+
+
 //BUILT-IN MIDDLEWARE
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
+
 
 
 //ROUTES
@@ -23,8 +53,7 @@ app.use( '/refresh', require('./routes/refresh') );
 app.use( '/logout', require('./routes/logout') );
 // app.use( '/', require('./routes/root') );
 
-
-app.use(verifyJWT); //CUSTOM MIDDLEWARE
+// app.use(verifyJWT); //CUSTOM MIDDLEWARE
 //API ROUTES
 app.use('/posts', require("./routes/API/posts"));
 app.use('/messages', require("./routes/API/messages"));
@@ -42,6 +71,7 @@ app.all('*', ( req, res )=>{
         res.type('txt').send('404 Not Found.')
     }
 });
+
 
 //CONNECTING TO THE DB & MAKING THE SERVER LISTEN ON A PORT
 mongoose.connection.once('open', () => {
