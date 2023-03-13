@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const logoutController = require('../controllers/logoutController');
 
-router.post( '/', )
+
+router.get( '/', logoutController.erase);
+
 
 module.exports = router;

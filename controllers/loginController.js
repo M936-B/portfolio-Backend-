@@ -4,10 +4,10 @@ const jwt = require('jsonwebtoken');
 
 
 const authorize = async( req, res) => {
-    const { eml, pwd} = req.body;
-    if( !eml || !pwd) return res.status(400).json({"message": "Problem with request body."});
-
     try {
+        const { eml, pwd} = req.body;
+        if( !eml || !pwd) return res.status(400).json({"message": "Problem with request body."});
+
         const authUser = await User.findOne({ email: eml});
         if( !authUser) return res.status(404).json({"message": "This user's email is NOT registered."});
 
@@ -26,20 +26,20 @@ const authorize = async( req, res) => {
             authUser.refreshToken = refreshToken;
             await authUser.save();
             
+            
             res.cookie( "refreshToken", refreshToken ,{
                 httpOnly: true,
                 sameSite: 'none',
-                domain: 'bryanmurasira.netlify.app.com',
-                path: '/',
                 maxAge: 7 * 24 * 60 * 60 * 1000} //'add secure: true,' in the options when you stop using thunder client
             );
+            
             res.json({accessToken});
         } else {
             res.status(401).json({"message": "Incorrect Password."});
         }
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({"message": "Internal Server Error"})
+        res.status(500).json({ "message": "Internal Server Error."});
     }
 }
 
