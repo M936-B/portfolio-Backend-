@@ -32,7 +32,7 @@ const swaggerOptions = {
             }
         ],
     },
-    apis: ["./routes/API/*.js"]
+    apis: [ "./routes/*.js", "./routes/API/*.js"]
 }
 
 const specs = swaggerJsDoc(swaggerOptions);
@@ -48,7 +48,7 @@ app.use(cookieParser())
 
 //ROUTES
 app.use( '/register', require('./routes/registration') );
-app.use( '/auth', require('./routes/login') );
+app.use( '/authenticate', require('./routes/login') );
 app.use( '/refresh', require('./routes/refresh') );
 app.use( '/logout', require('./routes/logout') );
 // app.use( '/', require('./routes/root') );
