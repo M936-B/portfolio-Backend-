@@ -8,6 +8,7 @@ connectDB();
 const cookieParser = require('cookie-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 //CUSTOM IMPORTS
 const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT;
