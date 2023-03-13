@@ -7,9 +7,10 @@ const renew = async( req, res) => {
         const cookies = req.cookies;
         if (!cookies?.refreshToken) return res.sendStatus(401);
         const refreshToken = cookies.refreshToken;
+        console.log(refreshToken);
         
         const bearer = await User.findOne( {refreshToken: refreshToken}).exec();
-        if( !bearer) return res.sendStatus(403); //forbidden
+        if( !bearer) return res.sendStatus(404); //forbidden
         
         
         //evaluate jwt
