@@ -25,13 +25,13 @@ const authorize = async( req, res) => {
         authUser.refreshToken = refreshToken;
         await authUser.save();
         
+        
         res.cookie( "refreshToken", refreshToken ,{
             httpOnly: true,
             sameSite: 'none',
-            domain: 'bryanmurasira.netlify.app.com',
-            path: '/',
             maxAge: 7 * 24 * 60 * 60 * 1000} //'add secure: true,' in the options when you stop using thunder client
         );
+        
         res.json({accessToken});
     } else {
         res.status(401).json({"message": "Incorrect Password."});
