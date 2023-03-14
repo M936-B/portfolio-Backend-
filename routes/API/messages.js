@@ -105,11 +105,12 @@ const messageController = require('../../controllers/messageController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
+ * /messages/{id}:
  *   delete:
  *     summary: Deletes a Message
  *     tags: [Messages]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: id
  *         required: true
  *         description: The ID of the Message to be deleted
@@ -124,8 +125,6 @@ const messageController = require('../../controllers/messageController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
- * 
- * /messages/{id}:
  *   get:
  *     summary: Returns a Message by ID
  *     tags: [Messages]
@@ -155,10 +154,10 @@ const messageController = require('../../controllers/messageController');
 router.route('/')
     .get(messageController.getMessages)
     .post(messageController.sendMessage)
-    .put(messageController.updateMessage)
-    .delete(messageController.deleteMessage);
+    .put(messageController.updateMessage);
 router.route('/:id')
-    .get(messageController.getMessageByID);
+    .get(messageController.getMessageByID)
+    .delete(messageController.deleteMessage);
 
 
 module.exports = router;

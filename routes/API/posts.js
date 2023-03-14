@@ -105,11 +105,12 @@ const postController = require('../../controllers/postController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
+ * /posts/{id}:
  *   delete:
  *     summary: Deletes a blog post
  *     tags: [Posts]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: id
  *         required: true
  *         description: The ID of the blog post to be deleted
@@ -124,8 +125,6 @@ const postController = require('../../controllers/postController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
- * 
- * /posts/{id}:
  *   get:
  *     summary: Returns a blog post by ID
  *     tags: [Posts]
@@ -155,10 +154,11 @@ const postController = require('../../controllers/postController');
 router.route('/')
     .get(postController.getPosts)
     .post(postController.sendPost)
-    .put(postController.updatePost)
-    .delete(postController.deletePost);
+    .put(postController.updatePost);
+
 router.route('/:id')
-    .get(postController.getPostByID);
+    .get(postController.getPostByID)
+    .delete(postController.deletePost);
 
 
 module.exports = router;

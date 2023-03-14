@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 
 const getUsers = async( req, res) => {
@@ -31,9 +32,9 @@ const updateUser = async( req, res) => {
 }
 const deleteUser = async( req, res) => {
     try {
-        if( !req?.body?.id) return res.status(400).json({"message":"ID not present."});
+        if( !req?.params?.id) return res.status(400).json({"message":"ID not present."});
 
-        const userContent = await User.findByIdAndDelete(req.body.id).exec();
+        const userContent = await User.findByIdAndDelete(req.params.id).exec();
         if( !userContent) return res.status(404).json({"message":"Data not present in the db"});
 
         res.status(204).json(userContent);

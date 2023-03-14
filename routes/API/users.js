@@ -105,11 +105,12 @@ const userController = require('../../controllers/userController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
+ * /users/{id}:
  *   delete:
  *     summary: Deletes a User
  *     tags: [Users]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: id
  *         required: true
  *         description: The ID of the User to be deleted
@@ -124,8 +125,6 @@ const userController = require('../../controllers/userController');
  *         description: Data not present in the db.
  *       500:
  *         description: Internal Server Error.
- * 
- * /users/{id}:
  *   get:
  *     summary: Returns a User by ID
  *     tags: [Users]
@@ -154,10 +153,10 @@ const userController = require('../../controllers/userController');
 
 router.route('/')
     .get(userController.getUsers)
-    .put(userController.updateUser)
-    .delete(userController.deleteUser);
+    .put(userController.updateUser);
 router.route('/:id')
-    .get(userController.getUserByID);
+    .get(userController.getUserByID)
+    .delete(userController.deleteUser);
 
 
 module.exports = router;

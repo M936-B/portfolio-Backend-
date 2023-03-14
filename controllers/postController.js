@@ -47,13 +47,13 @@ const updatePost = async( req, res) => {
 }
 const deletePost = async( req, res) => {
     try {
-        if( !req?.body?.id) return res.status(400).json({"message":"ID not present."});
+        if( !req?.params?.id) return res.status(400).json({"message":"ID not present."});
 
-        const postContent = await Post.findById(req.body.id).exec();
+        const postContent = await Post.findById(req.params.id).exec();
         if( !postContent) return res.status(404).json({"message":"Data not present in the db"});
 
-        const result = await postContent.deleteOne({ _id: req.body.id});
-        res.status(204);
+        const result = await postContent.deleteOne({ _id: req.params.id});
+        res.sendStatus(204);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
