@@ -154,10 +154,14 @@ const postController = require('../../controllers/postController');
 router.route('/')
     .get(postController.getPosts)
     .post(postController.sendPost)
-    .put(postController.updatePost);
+    .put(postController.updatePost)
+    .delete((req, res) => {
+        return res.status(400).json({"message":"ID not present."});
+    })
+
 
 router.route('/:id')
-    .get(postController.getPostByID)
+    .get(postController.getPostByID)    
     .delete(postController.deletePost);
 
 

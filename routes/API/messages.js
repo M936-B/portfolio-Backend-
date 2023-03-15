@@ -154,7 +154,10 @@ const messageController = require('../../controllers/messageController');
 router.route('/')
     .get(messageController.getMessages)
     .post(messageController.sendMessage)
-    .put(messageController.updateMessage);
+    .put(messageController.updateMessage)
+    .delete((req, res) => {
+        return res.status(400).json({"message":"ID not present."});
+    });
 router.route('/:id')
     .get(messageController.getMessageByID)
     .delete(messageController.deleteMessage);
