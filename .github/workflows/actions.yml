@@ -37,7 +37,7 @@ jobs:
     env:
       PORT: ${{secrets.PORT}}
       SALT: ${{secrets.SALT}}
-      DATABASE_URI: ${{secrets.SATABASE_URI}}
+      DATABASE_URI: ${{secrets.DATABASE_URI}}
       ACCESS_TOKEN_SECRET: ${{secrets.ACCESS_TOKEN_SECRET}}
       REFRESH_TOKEN_SECRET: ${{secrets.REFRESH_TOKEN_SECRET}}
     strategy:
