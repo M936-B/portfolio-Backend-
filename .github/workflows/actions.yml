@@ -4,10 +4,12 @@
 name: integration
 
 on:
-  push:
-    branches: [ "develop" ]
   pull_request:
-    branches: [ "develop" ]
+  push:
+    branches:
+      - ft-new-github-action
+      - develop
+
 
 jobs:
   build:
