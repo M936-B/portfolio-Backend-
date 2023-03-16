@@ -51,7 +51,7 @@ const deletePost = async( req, res) => {
 
         const postContent = await Post.findById(req.params.id).exec();
         if( !postContent) return res.status(404).json({"message":"Data not present in the db"});
-
+        await Post.deleteMany({"title": "Delete Me"});
         const result = await postContent.deleteOne({ _id: req.params.id});
         res.sendStatus(204);
     } catch (error) {

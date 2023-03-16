@@ -1,7 +1,23 @@
+require('dotenv').config();
 const request = require("supertest");
-const server = require('./server');
+const app = require('./app');
+const mongoose = require('mongoose');
 const Post = require('./models/Post');
 const Message = require('./models/Message');
+
+
+beforeAll(async () => {
+    await mongoose.connect(process.env.DATABASE_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+});
+
+afterAll(done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    mongoose.connection.close()
+    done()
+})
 
 
 // POST API
@@ -9,7 +25,7 @@ describe('/routes/posts', () => {
     describe('GET posts', () => {
         it('Should return an array of all posts in the db', async () => {
             //send GET request to '/posts'
-            const response = await request(server).get('/posts');
+            const response = await request(app).get('/posts');
 
             //check response content-type, status & body
             expect(response.header['content-type']).toMatch(/application\/json/);
@@ -23,7 +39,7 @@ describe('/routes/posts', () => {
 
 
             //send GET request to an empty post collection
-            const response = await request(server).get('/posts');
+            const response = await request(app).get('/posts');
 
             //check status for a 404 & a message
             expect(response.status).toBe(404);
@@ -33,23 +49,23 @@ describe('/routes/posts', () => {
             Post.find.mockRestore();
         });
 
-        // it('should return a 500 error when there is a server error', async () => {
+        // it('should return a 500 error when there is a app error', async () => {
         //     const postController = require('./controllers/postController');
         //     postController.getPosts = jest.fn().mockImplementation(() => {
         //         try {
         //             throw new Error("Test Error");
         //         } catch (error) {
         //             console.error(error);
-        //             res.status(500).json({ message: "Internal server error" });
+        //             res.status(500).json({ message: "Internal app error" });
         //         }
         //     });
             
         //     // Send GET request to '/posts'
-        //     const response = await request(server).get('/posts');
+        //     const response = await request(app).get('/posts');
 
         //     // Check response status and body
         //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
+        //     expect(response.body).toEqual({ message: "Internal app error" });
         // });
     });
 
@@ -62,7 +78,7 @@ describe('/routes/posts', () => {
                 title: 'New Post',
                 body: 'This is a new post',
             };
-            const response = await request(server).post('/posts').send(postData);
+            const response = await request(app).post('/posts').send(postData);
 
             // Check response status and body
             expect(response.status).toBe(201);
@@ -86,14 +102,14 @@ describe('/routes/posts', () => {
                 title: 'New Post',
                 body: 'This is a new post',
             };
-            const response = await request(server).post('/posts').send(postData);
+            const response = await request(app).post('/posts').send(postData);
 
             // Check response status and body
             expect(response.status).toBe(400);
             expect(response.body).toEqual({ message: "Missing Data!" });
         });
 
-        // it('should return a 500 error when there is a server error', async () => {
+        // it('should return a 500 error when there is a app error', async () => {
         //     // Mock Post.create() to throw an error
         //     Post.create = jest.fn().mockRejectedValue(new Error('Test error'));
 
@@ -103,11 +119,11 @@ describe('/routes/posts', () => {
         //         title: 'New Post',
         //         body: 'This is a new post',
         //     };
-        //     const response = await request(server).post('/posts').send(postData);
+        //     const response = await request(app).post('/posts').send(postData);
 
         //     // Check response status and body
         //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
+        //     expect(response.body).toEqual({ message: "Internal app error" });
         // });
     });
 
@@ -116,7 +132,7 @@ describe('/routes/posts', () => {
     describe('DELETE posts', () => {
         it('should return a 400 when the ID is not present', async() => {
             //send empty param url request
-            const response = await request(server).delete('/posts/');
+            const response = await request(app).delete('/posts/');
 
             //check for a 404 status & consequent message
             // expect(response.status).toBe(400);
@@ -133,7 +149,7 @@ describe('/routes/posts', () => {
             const post = await Post.create(postData);
 
             // Send DELETE request to /route/posts/:id
-            const response = await request(server).delete(`/posts/${post._id}`);
+            const response = await request(app).delete(`/posts/${post._id}`);
 
             // Check response status
             expect(response.status).toBe(204);
@@ -162,7 +178,7 @@ describe('/routes/posts', () => {
                 body: 'This post is an updated version.',
             };
 
-            const response = await request(server).put('/posts').send(updatedData);
+            const response = await request(app).put('/posts').send(updatedData);
 
             //check for response status & content
             expect(response.status).toBe(201);
@@ -176,13 +192,12 @@ describe('/routes/posts', () => {
     })
 });
 
-
 // Message API
 describe('/routes/messages', () => {
     describe('GET messages', () => {
         it('Should return an array of all messages in the db', async () => {
             //send GET request to '/messages'
-            const response = await request(server).get('/messages');
+            const response = await request(app).get('/messages');
 
             //check response content-type, status & body
             expect(response.header['content-type']).toMatch(/application\/json/);
@@ -195,7 +210,7 @@ describe('/routes/messages', () => {
             jest.spyOn(Message, 'find').mockReturnValue([]);
 
             //send GET request to an empty messages collection
-            const response = await request(server).get('/messages');
+            const response = await request(app).get('/messages');
 
             //check status for a 404 & a message
             expect(response.status).toBe(404);
@@ -215,7 +230,7 @@ describe('/routes/messages', () => {
                 email: 'test@email.com',
                 msg: 'This is a new message',
             };
-            const response = await request(server).post('/messages').send(messageData);
+            const response = await request(app).post('/messages').send(messageData);
 
             // Check response status and body
             expect(response.status).toBe(201);
@@ -236,7 +251,7 @@ describe('/routes/messages', () => {
                 name: 'Dummy Name',
                 email: 'test@email.com'
             };
-            const response = await request(server).post('/messages').send(messageData);
+            const response = await request(app).post('/messages').send(messageData);
 
             // Check response status and body
             expect(response.status).toBe(400);
@@ -256,7 +271,7 @@ describe('/routes/messages', () => {
             const message = await Message.create(messageData);
 
             // Send DELETE request to /route/messages/:id
-            const response = await request(server).delete(`/messages/${message._id}`);
+            const response = await request(app).delete(`/messages/${message._id}`);
 
             // Check response status
             expect(response.status).toBe(204);
@@ -268,7 +283,7 @@ describe('/routes/messages', () => {
 
         it('should return a 400 when the ID is not present', async() => {
             //send empty params url request
-            const response = await request(server).delete('/messages/');
+            const response = await request(app).delete('/messages/');
 
             //check for a 404 status & consequent message
             // expect(response.status).toBe(400);
@@ -294,7 +309,7 @@ describe('/routes/messages', () => {
                 msg: 'This is an updated message'
             };
 
-            const response = await request(server).put('/messages').send(updatedData);
+            const response = await request(app).put('/messages').send(updatedData);
 
             //check for response status & content
             expect(response.status).toBe(201);
@@ -321,7 +336,7 @@ describe('/routes/messages', () => {
                 email: 'Updatetest@email.com',
                 msg: 'This is an updated message'
             };
-            const response = await request(server).put('/messages').send(updatedData);
+            const response = await request(app).put('/messages').send(updatedData);
 
             //check for status 400 & corresponding message
             expect(response.status).toBe(400);
@@ -336,7 +351,7 @@ describe('/routes/messages', () => {
                 email: 'Updatetest@email.com',
                 msg: 'This is an updated message'
             };
-            const response = await request(server).put('/messages').send(updatedData);
+            const response = await request(app).put('/messages').send(updatedData);
 
             //check for status 400 & corresponding message
             expect(response.status).toBe(400);
