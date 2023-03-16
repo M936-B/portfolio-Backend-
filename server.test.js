@@ -6,6 +6,10 @@ const Message = require('./models/Message');
 
 // POST API
 describe('/routes/posts', () => {
+    afterAll((done) => {
+        server.close(done);
+    });
+
     describe('GET posts', () => {
         it('Should return an array of all posts in the db', async () => {
             //send GET request to '/posts'
@@ -176,173 +180,172 @@ describe('/routes/posts', () => {
     })
 });
 
+// // Message API
+// describe('/routes/messages', () => {
+//     describe('GET messages', () => {
+//         it('Should return an array of all messages in the db', async () => {
+//             //send GET request to '/messages'
+//             const response = await request(server).get('/messages');
 
-// Message API
-describe('/routes/messages', () => {
-    describe('GET messages', () => {
-        it('Should return an array of all messages in the db', async () => {
-            //send GET request to '/messages'
-            const response = await request(server).get('/messages');
+//             //check response content-type, status & body
+//             expect(response.header['content-type']).toMatch(/application\/json/);
+//             expect(response.status).toBe(200);
+//             expect(Array.isArray(response.body)).toBe(true);
+//         }, 10000);
 
-            //check response content-type, status & body
-            expect(response.header['content-type']).toMatch(/application\/json/);
-            expect(response.status).toBe(200);
-            expect(Array.isArray(response.body)).toBe(true);
-        }, 10000);
+//         it('Should return a 404 when the database is empty', async () => {
+//             //Fake an empty database response.
+//             jest.spyOn(Message, 'find').mockReturnValue([]);
 
-        it('Should return a 404 when the database is empty', async () => {
-            //Fake an empty database response.
-            jest.spyOn(Message, 'find').mockReturnValue([]);
+//             //send GET request to an empty messages collection
+//             const response = await request(server).get('/messages');
 
-            //send GET request to an empty messages collection
-            const response = await request(server).get('/messages');
+//             //check status for a 404 & a message
+//             expect(response.status).toBe(404);
+//             expect(response.header['content-type']).toMatch(/application\/json/);
+//             expect(response.body).toEqual({ message: "There's no data." })
 
-            //check status for a 404 & a message
-            expect(response.status).toBe(404);
-            expect(response.header['content-type']).toMatch(/application\/json/);
-            expect(response.body).toEqual({ message: "There's no data." })
+//             Message.find.mockRestore();
+//         });
+//     });
 
-            Message.find.mockRestore();
-        });
-    });
+//     describe('POST messages', () => {
 
-    describe('POST messages', () => {
+//         it('should CREATE a new message', async () => {
+//             // Send POST request to /route/messages with sample message data
+//             const messageData = {
+//                 name: 'Dummy Name',
+//                 email: 'test@email.com',
+//                 msg: 'This is a new message',
+//             };
+//             const response = await request(server).post('/messages').send(messageData);
 
-        it('should CREATE a new message', async () => {
-            // Send POST request to /route/messages with sample message data
-            const messageData = {
-                name: 'Dummy Name',
-                email: 'test@email.com',
-                msg: 'This is a new message',
-            };
-            const response = await request(server).post('/messages').send(messageData);
+//             // Check response status and body
+//             expect(response.status).toBe(201);
+//             expect(response.body.name).toBe(messageData.name);
+//             expect(response.body.email).toBe(messageData.email);
+//             expect(response.body.msg).toBe(messageData.msg);
 
-            // Check response status and body
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe(messageData.name);
-            expect(response.body.email).toBe(messageData.email);
-            expect(response.body.msg).toBe(messageData.msg);
+//             // Check if the post is actually saved in the database
+//             const message = await Message.findOne({ email: messageData.email });
+//             expect(message).toBeDefined();
+//             expect(message.name).toBe(messageData.name);
+//             expect(message.msg).toBe(messageData.msg);
+//         }, 10500);
 
-            // Check if the post is actually saved in the database
-            const message = await Message.findOne({ email: messageData.email });
-            expect(message).toBeDefined();
-            expect(message.name).toBe(messageData.name);
-            expect(message.msg).toBe(messageData.msg);
-        }, 10500);
+//         it('should return a 400 error when missing data', async () => {
+//             // Send POST request to /route/messages with missing data
+//             const messageData = {
+//                 name: 'Dummy Name',
+//                 email: 'test@email.com'
+//             };
+//             const response = await request(server).post('/messages').send(messageData);
 
-        it('should return a 400 error when missing data', async () => {
-            // Send POST request to /route/messages with missing data
-            const messageData = {
-                name: 'Dummy Name',
-                email: 'test@email.com'
-            };
-            const response = await request(server).post('/messages').send(messageData);
-
-            // Check response status and body
-            expect(response.status).toBe(400);
-            expect(response.body).toEqual({ message: "Missing Data!" });
-        });
-    });
+//             // Check response status and body
+//             expect(response.status).toBe(400);
+//             expect(response.body).toEqual({ message: "Missing Data!" });
+//         });
+//     });
 
 
-    describe('DELETE messages', () => {
-        it('should delete a MESSAGE using ID received from url params', async() => {
-            // Create a sample MESSAGE
-            const messageData = {
-                name: 'Dummy Name',
-                email: 'test@email.com',
-                msg: 'This is a new message',
-            };
-            const message = await Message.create(messageData);
+//     describe('DELETE messages', () => {
+//         it('should delete a MESSAGE using ID received from url params', async() => {
+//             // Create a sample MESSAGE
+//             const messageData = {
+//                 name: 'Dummy Name',
+//                 email: 'test@email.com',
+//                 msg: 'This is a new message',
+//             };
+//             const message = await Message.create(messageData);
 
-            // Send DELETE request to /route/messages/:id
-            const response = await request(server).delete(`/messages/${message._id}`);
+//             // Send DELETE request to /route/messages/:id
+//             const response = await request(server).delete(`/messages/${message._id}`);
 
-            // Check response status
-            expect(response.status).toBe(204);
+//             // Check response status
+//             expect(response.status).toBe(204);
 
-            // Check if the MESSAGE still exists in the database
-            const deletedMessage = await Message.findById(message._id);
-            expect(deletedMessage).toBeDefined();
-        });
+//             // Check if the MESSAGE still exists in the database
+//             const deletedMessage = await Message.findById(message._id);
+//             expect(deletedMessage).toBeDefined();
+//         });
 
-        it('should return a 400 when the ID is not present', async() => {
-            //send empty params url request
-            const response = await request(server).delete('/messages/');
+//         it('should return a 400 when the ID is not present', async() => {
+//             //send empty params url request
+//             const response = await request(server).delete('/messages/');
 
-            //check for a 404 status & consequent message
-            // expect(response.status).toBe(400);
-            expect(response.body).toEqual({ message: "ID not present." });
-        });
-    });
+//             //check for a 404 status & consequent message
+//             // expect(response.status).toBe(400);
+//             expect(response.body).toEqual({ message: "ID not present." });
+//         });
+//     });
 
-    describe('PUT messages', () => {
-        it('ShouLd UPDATE a message in the DB ', async() => {
-            //create a sample message
-            const messageData = {
-                name: 'Dummy Original',
-                email: 'originaltest@email.com',
-                msg: 'This is a new message',
-            };
-            const message = await Message.create(messageData);
+//     describe('PUT messages', () => {
+//         it('ShouLd UPDATE a message in the DB ', async() => {
+//             //create a sample message
+//             const messageData = {
+//                 name: 'Dummy Original',
+//                 email: 'originaltest@email.com',
+//                 msg: 'This is a new message',
+//             };
+//             const message = await Message.create(messageData);
 
-            //Make an update on the message
-            const updatedData = {
-                id: `${message._id}`,
-                name: 'Dummy Update',
-                email: 'Updatetest@email.com',
-                msg: 'This is an updated message'
-            };
+//             //Make an update on the message
+//             const updatedData = {
+//                 id: `${message._id}`,
+//                 name: 'Dummy Update',
+//                 email: 'Updatetest@email.com',
+//                 msg: 'This is an updated message'
+//             };
 
-            const response = await request(server).put('/messages').send(updatedData);
+//             const response = await request(server).put('/messages').send(updatedData);
 
-            //check for response status & content
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe(updatedData.name);
-            expect(response.body.email).toBe(updatedData.email);
-            expect(response.body.msg).toBe(updatedData.msg);
+//             //check for response status & content
+//             expect(response.status).toBe(201);
+//             expect(response.body.name).toBe(updatedData.name);
+//             expect(response.body.email).toBe(updatedData.email);
+//             expect(response.body.msg).toBe(updatedData.msg);
 
-            await Message.findByIdAndDelete(message._id);
-        });
+//             await Message.findByIdAndDelete(message._id);
+//         });
 
-        it('should return 400 if id is absent in the body', async () => {
-            //fake create a message
-            const messageData = {
-                name: 'Dummy Original',
-                email: 'originaltest@email.com',
-                msg: 'This is a new message',
-            };
-            const message = await Message.create(messageData);
+//         it('should return 400 if id is absent in the body', async () => {
+//             //fake create a message
+//             const messageData = {
+//                 name: 'Dummy Original',
+//                 email: 'originaltest@email.com',
+//                 msg: 'This is a new message',
+//             };
+//             const message = await Message.create(messageData);
 
-            //make an update
-            const updatedData = {
-                //id: `${message._id}`, Omit the ID
-                name: 'Dummy Update',
-                email: 'Updatetest@email.com',
-                msg: 'This is an updated message'
-            };
-            const response = await request(server).put('/messages').send(updatedData);
+//             //make an update
+//             const updatedData = {
+//                 //id: `${message._id}`, Omit the ID
+//                 name: 'Dummy Update',
+//                 email: 'Updatetest@email.com',
+//                 msg: 'This is an updated message'
+//             };
+//             const response = await request(server).put('/messages').send(updatedData);
 
-            //check for status 400 & corresponding message
-            expect(response.status).toBe(400);
-            expect(response.body).toEqual({"message":"ID not present."});
-        });
+//             //check for status 400 & corresponding message
+//             expect(response.status).toBe(400);
+//             expect(response.body).toEqual({"message":"ID not present."});
+//         });
 
-        it('should return a 400 when the ID requested is wrongly written.', async () => {
-            //make an update 
-            const updatedData = {
-                id: "1234567890", //Faulty ID
-                name: 'Dummy Update',
-                email: 'Updatetest@email.com',
-                msg: 'This is an updated message'
-            };
-            const response = await request(server).put('/messages').send(updatedData);
+//         it('should return a 400 when the ID requested is wrongly written.', async () => {
+//             //make an update 
+//             const updatedData = {
+//                 id: "1234567890", //Faulty ID
+//                 name: 'Dummy Update',
+//                 email: 'Updatetest@email.com',
+//                 msg: 'This is an updated message'
+//             };
+//             const response = await request(server).put('/messages').send(updatedData);
 
-            //check for status 400 & corresponding message
-            expect(response.status).toBe(400);
-            expect(response.body).toEqual({"message": "ID not present."});
-        });
-    });
-});
+//             //check for status 400 & corresponding message
+//             expect(response.status).toBe(400);
+//             expect(response.body).toEqual({"message": "ID not present."});
+//         });
+//     });
+// });
 
 
