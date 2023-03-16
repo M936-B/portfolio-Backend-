@@ -28,7 +28,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: "http://localhost:3500/",
+                url: "http://localhost:4000/",
                 description: "Development Server"
             }
         ],
@@ -81,3 +81,5 @@ mongoose.connection.once('open', () => {
         console.log(`[SERVER] RUNNING ON PORT: ${PORT}`);
     });
 });
+
+module.exports = app;

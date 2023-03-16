@@ -47,7 +47,7 @@ const updatePost = async( req, res) => {
 }
 const deletePost = async( req, res) => {
     try {
-        if( !req?.params?.id) return res.status(400).json({"message":"ID not present."});
+        if( !req.params?.id && req.params?.id !== 0) return res.status(400).json({"message":"ID not present."});
 
         const postContent = await Post.findById(req.params.id).exec();
         if( !postContent) return res.status(404).json({"message":"Data not present in the db"});

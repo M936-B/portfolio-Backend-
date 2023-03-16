@@ -1,10 +1,10 @@
 const Message = require('../models/Message');
-
+const mongoose = require('mongoose');
 
 const getMessages = async( req, res) => {
     try {
         const result = await Message.find();
-        if( !result || result.length === 0) return res.status(200).json({"message": "There's no data."})
+        if( !result || result.length === 0) return res.status(404).json({"message": "There's no data."})
         res.status(200).json(result);
     } catch (error) {
         console.error(error);
@@ -29,7 +29,7 @@ const sendMessage = async( req, res) => {
 }
 const updateMessage = async( req, res) => {
     try {
-        if( !req?.body?.id) return res.status(400).json({"message":"ID not present."});
+        if( !req?.body?.id || !mongoose.Types.ObjectId.isValid(req.body.id)) return res.status(400).json({"message":"ID not present."});
 
         const messageContent = await Message.findById(req.body.id).exec();
         if( !messageContent) return res.status(404).json({"message":"Data not present in the db"});
@@ -54,9 +54,9 @@ const deleteMessage = async( req, res) => {
 
         const result = await messageContent.deleteOne({ _id: req.params.id});
         res.status(204).json(result);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+    } catch (err) {
+        console.error(err.name);
+        res.status(500).json({ message: `Internal server error` });
     }
 }
 const getMessageByID = async( req, res) => {
