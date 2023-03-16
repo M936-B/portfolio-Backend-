@@ -7,7 +7,6 @@ const Message = require('./models/Message');
 
 
 beforeAll(async () => {
-    //server = app.listen(3000); // replace `app` with your Express.js app instance
     await mongoose.connect(process.env.DATABASE_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
