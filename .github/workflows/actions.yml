@@ -18,7 +18,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: ${{ matrix.node-version }}
+        node-version: [14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -34,16 +34,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
+        env:
       PORT: ${{secrets.PORT}}
       SALT: ${{secrets.SALT}}
       DATABASE_URI: ${{secrets.SATABASE_URI}}
       ACCESS_TOKEN_SECRET: ${{secrets.ACCESS_TOKEN_SECRET}}
       REFRESH_TOKEN_SECRET: ${{secrets.REFRESH_TOKEN_SECRET}}
-
     strategy:
       matrix:
-        node-version: ${{ matrix.node-version }}
+        node-version: [14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
