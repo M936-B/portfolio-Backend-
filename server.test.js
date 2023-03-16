@@ -174,10 +174,6 @@ describe('/routes/posts', () => {
             
         })
     })
-    server.(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
 });
 
 // // Message API
