@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const connectDB = require('./Config/dbConnect');
-//connectDB();
+connectDB();
 const cookieParser = require('cookie-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -75,13 +75,11 @@ app.all('*', ( req, res )=>{
 
 
 //CONNECTING TO THE DB & MAKING THE SERVER LISTEN ON A PORT
-// mongoose.connection.once('open', () => {
-//     console.log("[DATABASE] Connected");
-    
-// });
-
-app.listen( PORT, () => {
-    console.log(`[SERVER] RUNNING ON PORT: ${PORT}`);
+mongoose.connection.once('open', () => {
+    console.log("[DATABASE] Connected");
+    app.listen( PORT, () => {
+        console.log(`[SERVER] RUNNING ON PORT: ${PORT}`);
+    });
 });
 
 module.exports = app;

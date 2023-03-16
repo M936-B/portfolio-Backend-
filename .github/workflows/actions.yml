@@ -15,7 +15,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
@@ -33,6 +33,13 @@ jobs:
   unit-tests:
 
     runs-on: ubuntu-latest
+
+    env:
+      PORT = 4000
+      SALT = 10
+      DATABASE_URI = mongodb+srv://bryanAtlas:kigalipassword123@portfoliocluster.m1sbcxl.mongodb.net/PortfolioDB?retryWrites=true&w=majority
+      ACCESS_TOKEN_SECRET = 566dbd15324f60cc381e300319ec38411e2b14232ca02d1850449efcd81bd7ddf9a3fe7ab3b637f18cad0b5ff9e18a4b2f7e45e123c2c4ab31d21f419ee79485
+      REFRESH_TOKEN_SECRET = 96b30c75446a7d58177e68d00bbe4c5b0191182a068544dd49e48640ee3d1ba92a48814ce34cddcd23bb8790be27bd3902e29cd2ce7db9bf647ebf2af03bf74e
 
     strategy:
       matrix:
