@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mongoose = require('mongoose'); //import mongoose
 
 const connectDB = async () => { //create the async function for connecting to the db using the DATABASE_URI in .env
