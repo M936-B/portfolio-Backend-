@@ -6,10 +6,6 @@ const Message = require('./models/Message');
 
 // POST API
 describe('/routes/posts', () => {
-    afterAll((done) => {
-        server.close(done);
-    });
-
     describe('GET posts', () => {
         it('Should return an array of all posts in the db', async () => {
             //send GET request to '/posts'
@@ -178,6 +174,10 @@ describe('/routes/posts', () => {
             
         })
     })
+    server.(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });
 
 // // Message API
