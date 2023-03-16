@@ -1,0 +1,29 @@
+Here's the Git & Trello Workflow that we need to  adhere to:
+1. You pick a story to work on from Trello. It could be a feature/chore/bug
+Eg. As a user, I should be able to signup
+2. Create the branch for the story off develop branch
+Eg. ft-create-signup-route-cp-54 [For feature]
+ch-create-signup-route-cp-23 [For chore]
+bg-create-signup-route-cp-5 [For bug]
+3. Build the feature and commit.
+Eg. of a good commit message
+feat(signup): create the signup feature
+
+- create the ui for the feature
+- modify some components
+
+[Finishes #CP-23]
+4. Push your code to github on the feature/chore/bug branch you're currently working in
+5. Create a pull request for the feature against the `develop` branch
+> *Title*: #162836478 Create the signup feature
+> *description*
+>
+#### What does this PR do?
+[what the PR does]
+#### Description of Task to be completed
+[the tasks that you completed on the feature]
+#### How should this be manually tested?
+#### Any background context you want to provide?
+#### What are the relevant pivotal tracker stories?
+#### Screenshots (if appropriate)
+```
