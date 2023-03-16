@@ -75,6 +75,9 @@ describe('/routes/posts', () => {
             expect(post).toBeDefined();
             expect(post.article_image).toBe(postData.article_image);
             expect(post.body).toBe(postData.body);
+
+            //delete the post
+            await Post.findOneAndDelete({ title: postData.title });
         }, 10500);
 
         it('should return a 400 error when missing data', async () => {
@@ -167,7 +170,7 @@ describe('/routes/posts', () => {
             expect(response.body.title).toBe(updatedData.title);
             expect(response.body.body).toBe(updatedData.body);
 
-            const deletedPost = await Post.findByIdAndDelete(post._id);
+            await Post.findByIdAndDelete(post._id);
             
         })
     })
@@ -201,25 +204,6 @@ describe('/routes/messages', () => {
 
             Message.find.mockRestore();
         });
-
-        // it('should return a 500 error when there is a server error', async () => {
-        //     const messageController = require('./controllers/messageController');
-        //     messageController.getmessages = jest.fn().mockImplementation(() => {
-        //         try {
-        //             throw new Error("Test Error");
-        //         } catch (error) {
-        //             console.error(error);
-        //             res.status(500).json({ message: "Internal server error" });
-        //         }
-        //     });
-            
-        //     // Send GET request to '/messages'
-        //     const response = await request(server).get('/messages');
-
-        //     // Check response status and body
-        //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
-        // });
     });
 
     describe('POST messages', () => {
@@ -258,36 +242,10 @@ describe('/routes/messages', () => {
             expect(response.status).toBe(400);
             expect(response.body).toEqual({ message: "Missing Data!" });
         });
-
-        // it('should return a 500 error when there is a server error', async () => {
-        //     // Mock Message.create() to throw an error
-        //     Message.create = jest.fn().mockRejectedValue(new Error('Test error'));
-
-        //     // Send POST request to /route/messages with sample Message data
-        //     const postData = {
-        //         article_image: 'https://example.com/image.png',
-        //         title: 'New Post',
-        //         body: 'This is a new post',
-        //     };
-        //     const response = await request(server).post('/messages').send(postData);
-
-        //     // Check response status and body
-        //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
-        // });
     });
 
 
     describe('DELETE messages', () => {
-        it('should return a 400 when the ID is not present', async() => {
-            //send empty params url request
-            const response = await request(server).delete('/messages/');
-
-            //check for a 404 status & consequent message
-            // expect(response.status).toBe(400);
-            expect(response.body).toEqual({ message: "ID not present." });
-        });
-
         it('should delete a MESSAGE using ID received from url params', async() => {
             // Create a sample MESSAGE
             const messageData = {
@@ -306,6 +264,15 @@ describe('/routes/messages', () => {
             // Check if the MESSAGE still exists in the database
             const deletedMessage = await Message.findById(message._id);
             expect(deletedMessage).toBeDefined();
+        });
+
+        it('should return a 400 when the ID is not present', async() => {
+            //send empty params url request
+            const response = await request(server).delete('/messages/');
+
+            //check for a 404 status & consequent message
+            // expect(response.status).toBe(400);
+            expect(response.body).toEqual({ message: "ID not present." });
         });
     });
 
@@ -336,9 +303,46 @@ describe('/routes/messages', () => {
             expect(response.body.msg).toBe(updatedData.msg);
 
             await Message.findByIdAndDelete(message._id);
-            
-        })
-    })
+        });
+
+        it('should return 400 if id is absent in the body', async () => {
+            //fake create a message
+            const messageData = {
+                name: 'Dummy Original',
+                email: 'originaltest@email.com',
+                msg: 'This is a new message',
+            };
+            const message = await Message.create(messageData);
+
+            //make an update
+            const updatedData = {
+                //id: `${message._id}`, Omit the ID
+                name: 'Dummy Update',
+                email: 'Updatetest@email.com',
+                msg: 'This is an updated message'
+            };
+            const response = await request(server).put('/messages').send(updatedData);
+
+            //check for status 400 & corresponding message
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({"message":"ID not present."});
+        });
+
+        it('should return a 400 when the ID requested is wrongly written.', async () => {
+            //make an update 
+            const updatedData = {
+                id: "1234567890", //Faulty ID
+                name: 'Dummy Update',
+                email: 'Updatetest@email.com',
+                msg: 'This is an updated message'
+            };
+            const response = await request(server).put('/messages').send(updatedData);
+
+            //check for status 400 & corresponding message
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({"message": "ID not present."});
+        });
+    });
 });
 
 
