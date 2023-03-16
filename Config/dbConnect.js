@@ -1,9 +1,8 @@
 require('dotenv').config();
-import mongoose from 'mongoose';
+const mongoose = require('mongoose')
 
-dotEnv.config();
 
-mongoose.connect(process.env.CONNECTION , {useNewUrlParser: true , useUnifiedTopology: true })
+mongoose.connect(process.env.DATABASE_URI , {useNewUrlParser: true , useUnifiedTopology: true })
 const db = mongoose.connection;
 db.on('error', console.error.bind(console , 'connection error') );
 db.once('open' , function() {
@@ -11,4 +10,4 @@ db.once('open' , function() {
 })
 
 
-export default db
+module.exports = db;
