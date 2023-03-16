@@ -34,7 +34,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-        env:
+    env:
       PORT: ${{secrets.PORT}}
       SALT: ${{secrets.SALT}}
       DATABASE_URI: ${{secrets.SATABASE_URI}}
