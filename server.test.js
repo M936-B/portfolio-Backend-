@@ -1,7 +1,24 @@
+require('dotenv').config();
 const request = require("supertest");
-const server = require('./server');
+const app = require('./app');
+const mongoose = require('mongoose');
 const Post = require('./models/Post');
 const Message = require('./models/Message');
+
+
+beforeAll(async () => {
+    //server = app.listen(3000); // replace `app` with your Express.js app instance
+    await mongoose.connect(process.env.DATABASE_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+});
+
+afterAll(done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    mongoose.connection.close()
+    done()
+})
 
 
 // POST API
@@ -9,7 +26,7 @@ describe('/routes/posts', () => {
     describe('GET posts', () => {
         it('Should return an array of all posts in the db', async () => {
             //send GET request to '/posts'
-            const response = await request(server).get('/posts');
+            const response = await request(app).get('/posts');
 
             //check response content-type, status & body
             expect(response.header['content-type']).toMatch(/application\/json/);
@@ -23,7 +40,7 @@ describe('/routes/posts', () => {
 
 
             //send GET request to an empty post collection
-            const response = await request(server).get('/posts');
+            const response = await request(app).get('/posts');
 
             //check status for a 404 & a message
             expect(response.status).toBe(404);
@@ -33,23 +50,23 @@ describe('/routes/posts', () => {
             Post.find.mockRestore();
         });
 
-        // it('should return a 500 error when there is a server error', async () => {
+        // it('should return a 500 error when there is a app error', async () => {
         //     const postController = require('./controllers/postController');
         //     postController.getPosts = jest.fn().mockImplementation(() => {
         //         try {
         //             throw new Error("Test Error");
         //         } catch (error) {
         //             console.error(error);
-        //             res.status(500).json({ message: "Internal server error" });
+        //             res.status(500).json({ message: "Internal app error" });
         //         }
         //     });
             
         //     // Send GET request to '/posts'
-        //     const response = await request(server).get('/posts');
+        //     const response = await request(app).get('/posts');
 
         //     // Check response status and body
         //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
+        //     expect(response.body).toEqual({ message: "Internal app error" });
         // });
     });
 
@@ -62,7 +79,7 @@ describe('/routes/posts', () => {
                 title: 'New Post',
                 body: 'This is a new post',
             };
-            const response = await request(server).post('/posts').send(postData);
+            const response = await request(app).post('/posts').send(postData);
 
             // Check response status and body
             expect(response.status).toBe(201);
@@ -86,14 +103,14 @@ describe('/routes/posts', () => {
                 title: 'New Post',
                 body: 'This is a new post',
             };
-            const response = await request(server).post('/posts').send(postData);
+            const response = await request(app).post('/posts').send(postData);
 
             // Check response status and body
             expect(response.status).toBe(400);
             expect(response.body).toEqual({ message: "Missing Data!" });
         });
 
-        // it('should return a 500 error when there is a server error', async () => {
+        // it('should return a 500 error when there is a app error', async () => {
         //     // Mock Post.create() to throw an error
         //     Post.create = jest.fn().mockRejectedValue(new Error('Test error'));
 
@@ -103,11 +120,11 @@ describe('/routes/posts', () => {
         //         title: 'New Post',
         //         body: 'This is a new post',
         //     };
-        //     const response = await request(server).post('/posts').send(postData);
+        //     const response = await request(app).post('/posts').send(postData);
 
         //     // Check response status and body
         //     expect(response.status).toBe(500);
-        //     expect(response.body).toEqual({ message: "Internal server error" });
+        //     expect(response.body).toEqual({ message: "Internal app error" });
         // });
     });
 
@@ -116,7 +133,7 @@ describe('/routes/posts', () => {
     describe('DELETE posts', () => {
         it('should return a 400 when the ID is not present', async() => {
             //send empty param url request
-            const response = await request(server).delete('/posts/');
+            const response = await request(app).delete('/posts/');
 
             //check for a 404 status & consequent message
             // expect(response.status).toBe(400);
@@ -133,7 +150,7 @@ describe('/routes/posts', () => {
             const post = await Post.create(postData);
 
             // Send DELETE request to /route/posts/:id
-            const response = await request(server).delete(`/posts/${post._id}`);
+            const response = await request(app).delete(`/posts/${post._id}`);
 
             // Check response status
             expect(response.status).toBe(204);
@@ -162,7 +179,7 @@ describe('/routes/posts', () => {
                 body: 'This post is an updated version.',
             };
 
-            const response = await request(server).put('/posts').send(updatedData);
+            const response = await request(app).put('/posts').send(updatedData);
 
             //check for response status & content
             expect(response.status).toBe(201);
@@ -176,172 +193,172 @@ describe('/routes/posts', () => {
     })
 });
 
-// // Message API
-// describe('/routes/messages', () => {
-//     describe('GET messages', () => {
-//         it('Should return an array of all messages in the db', async () => {
-//             //send GET request to '/messages'
-//             const response = await request(server).get('/messages');
+// Message API
+describe('/routes/messages', () => {
+    describe('GET messages', () => {
+        it('Should return an array of all messages in the db', async () => {
+            //send GET request to '/messages'
+            const response = await request(app).get('/messages');
 
-//             //check response content-type, status & body
-//             expect(response.header['content-type']).toMatch(/application\/json/);
-//             expect(response.status).toBe(200);
-//             expect(Array.isArray(response.body)).toBe(true);
-//         }, 10000);
+            //check response content-type, status & body
+            expect(response.header['content-type']).toMatch(/application\/json/);
+            expect(response.status).toBe(200);
+            expect(Array.isArray(response.body)).toBe(true);
+        }, 10000);
 
-//         it('Should return a 404 when the database is empty', async () => {
-//             //Fake an empty database response.
-//             jest.spyOn(Message, 'find').mockReturnValue([]);
+        it('Should return a 404 when the database is empty', async () => {
+            //Fake an empty database response.
+            jest.spyOn(Message, 'find').mockReturnValue([]);
 
-//             //send GET request to an empty messages collection
-//             const response = await request(server).get('/messages');
+            //send GET request to an empty messages collection
+            const response = await request(app).get('/messages');
 
-//             //check status for a 404 & a message
-//             expect(response.status).toBe(404);
-//             expect(response.header['content-type']).toMatch(/application\/json/);
-//             expect(response.body).toEqual({ message: "There's no data." })
+            //check status for a 404 & a message
+            expect(response.status).toBe(404);
+            expect(response.header['content-type']).toMatch(/application\/json/);
+            expect(response.body).toEqual({ message: "There's no data." })
 
-//             Message.find.mockRestore();
-//         });
-//     });
+            Message.find.mockRestore();
+        });
+    });
 
-//     describe('POST messages', () => {
+    describe('POST messages', () => {
 
-//         it('should CREATE a new message', async () => {
-//             // Send POST request to /route/messages with sample message data
-//             const messageData = {
-//                 name: 'Dummy Name',
-//                 email: 'test@email.com',
-//                 msg: 'This is a new message',
-//             };
-//             const response = await request(server).post('/messages').send(messageData);
+        it('should CREATE a new message', async () => {
+            // Send POST request to /route/messages with sample message data
+            const messageData = {
+                name: 'Dummy Name',
+                email: 'test@email.com',
+                msg: 'This is a new message',
+            };
+            const response = await request(app).post('/messages').send(messageData);
 
-//             // Check response status and body
-//             expect(response.status).toBe(201);
-//             expect(response.body.name).toBe(messageData.name);
-//             expect(response.body.email).toBe(messageData.email);
-//             expect(response.body.msg).toBe(messageData.msg);
+            // Check response status and body
+            expect(response.status).toBe(201);
+            expect(response.body.name).toBe(messageData.name);
+            expect(response.body.email).toBe(messageData.email);
+            expect(response.body.msg).toBe(messageData.msg);
 
-//             // Check if the post is actually saved in the database
-//             const message = await Message.findOne({ email: messageData.email });
-//             expect(message).toBeDefined();
-//             expect(message.name).toBe(messageData.name);
-//             expect(message.msg).toBe(messageData.msg);
-//         }, 10500);
+            // Check if the post is actually saved in the database
+            const message = await Message.findOne({ email: messageData.email });
+            expect(message).toBeDefined();
+            expect(message.name).toBe(messageData.name);
+            expect(message.msg).toBe(messageData.msg);
+        }, 10500);
 
-//         it('should return a 400 error when missing data', async () => {
-//             // Send POST request to /route/messages with missing data
-//             const messageData = {
-//                 name: 'Dummy Name',
-//                 email: 'test@email.com'
-//             };
-//             const response = await request(server).post('/messages').send(messageData);
+        it('should return a 400 error when missing data', async () => {
+            // Send POST request to /route/messages with missing data
+            const messageData = {
+                name: 'Dummy Name',
+                email: 'test@email.com'
+            };
+            const response = await request(app).post('/messages').send(messageData);
 
-//             // Check response status and body
-//             expect(response.status).toBe(400);
-//             expect(response.body).toEqual({ message: "Missing Data!" });
-//         });
-//     });
+            // Check response status and body
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({ message: "Missing Data!" });
+        });
+    });
 
 
-//     describe('DELETE messages', () => {
-//         it('should delete a MESSAGE using ID received from url params', async() => {
-//             // Create a sample MESSAGE
-//             const messageData = {
-//                 name: 'Dummy Name',
-//                 email: 'test@email.com',
-//                 msg: 'This is a new message',
-//             };
-//             const message = await Message.create(messageData);
+    describe('DELETE messages', () => {
+        it('should delete a MESSAGE using ID received from url params', async() => {
+            // Create a sample MESSAGE
+            const messageData = {
+                name: 'Dummy Name',
+                email: 'test@email.com',
+                msg: 'This is a new message',
+            };
+            const message = await Message.create(messageData);
 
-//             // Send DELETE request to /route/messages/:id
-//             const response = await request(server).delete(`/messages/${message._id}`);
+            // Send DELETE request to /route/messages/:id
+            const response = await request(app).delete(`/messages/${message._id}`);
 
-//             // Check response status
-//             expect(response.status).toBe(204);
+            // Check response status
+            expect(response.status).toBe(204);
 
-//             // Check if the MESSAGE still exists in the database
-//             const deletedMessage = await Message.findById(message._id);
-//             expect(deletedMessage).toBeDefined();
-//         });
+            // Check if the MESSAGE still exists in the database
+            const deletedMessage = await Message.findById(message._id);
+            expect(deletedMessage).toBeDefined();
+        });
 
-//         it('should return a 400 when the ID is not present', async() => {
-//             //send empty params url request
-//             const response = await request(server).delete('/messages/');
+        it('should return a 400 when the ID is not present', async() => {
+            //send empty params url request
+            const response = await request(app).delete('/messages/');
 
-//             //check for a 404 status & consequent message
-//             // expect(response.status).toBe(400);
-//             expect(response.body).toEqual({ message: "ID not present." });
-//         });
-//     });
+            //check for a 404 status & consequent message
+            // expect(response.status).toBe(400);
+            expect(response.body).toEqual({ message: "ID not present." });
+        });
+    });
 
-//     describe('PUT messages', () => {
-//         it('ShouLd UPDATE a message in the DB ', async() => {
-//             //create a sample message
-//             const messageData = {
-//                 name: 'Dummy Original',
-//                 email: 'originaltest@email.com',
-//                 msg: 'This is a new message',
-//             };
-//             const message = await Message.create(messageData);
+    describe('PUT messages', () => {
+        it('ShouLd UPDATE a message in the DB ', async() => {
+            //create a sample message
+            const messageData = {
+                name: 'Dummy Original',
+                email: 'originaltest@email.com',
+                msg: 'This is a new message',
+            };
+            const message = await Message.create(messageData);
 
-//             //Make an update on the message
-//             const updatedData = {
-//                 id: `${message._id}`,
-//                 name: 'Dummy Update',
-//                 email: 'Updatetest@email.com',
-//                 msg: 'This is an updated message'
-//             };
+            //Make an update on the message
+            const updatedData = {
+                id: `${message._id}`,
+                name: 'Dummy Update',
+                email: 'Updatetest@email.com',
+                msg: 'This is an updated message'
+            };
 
-//             const response = await request(server).put('/messages').send(updatedData);
+            const response = await request(app).put('/messages').send(updatedData);
 
-//             //check for response status & content
-//             expect(response.status).toBe(201);
-//             expect(response.body.name).toBe(updatedData.name);
-//             expect(response.body.email).toBe(updatedData.email);
-//             expect(response.body.msg).toBe(updatedData.msg);
+            //check for response status & content
+            expect(response.status).toBe(201);
+            expect(response.body.name).toBe(updatedData.name);
+            expect(response.body.email).toBe(updatedData.email);
+            expect(response.body.msg).toBe(updatedData.msg);
 
-//             await Message.findByIdAndDelete(message._id);
-//         });
+            await Message.findByIdAndDelete(message._id);
+        });
 
-//         it('should return 400 if id is absent in the body', async () => {
-//             //fake create a message
-//             const messageData = {
-//                 name: 'Dummy Original',
-//                 email: 'originaltest@email.com',
-//                 msg: 'This is a new message',
-//             };
-//             const message = await Message.create(messageData);
+        it('should return 400 if id is absent in the body', async () => {
+            //fake create a message
+            const messageData = {
+                name: 'Dummy Original',
+                email: 'originaltest@email.com',
+                msg: 'This is a new message',
+            };
+            const message = await Message.create(messageData);
 
-//             //make an update
-//             const updatedData = {
-//                 //id: `${message._id}`, Omit the ID
-//                 name: 'Dummy Update',
-//                 email: 'Updatetest@email.com',
-//                 msg: 'This is an updated message'
-//             };
-//             const response = await request(server).put('/messages').send(updatedData);
+            //make an update
+            const updatedData = {
+                //id: `${message._id}`, Omit the ID
+                name: 'Dummy Update',
+                email: 'Updatetest@email.com',
+                msg: 'This is an updated message'
+            };
+            const response = await request(app).put('/messages').send(updatedData);
 
-//             //check for status 400 & corresponding message
-//             expect(response.status).toBe(400);
-//             expect(response.body).toEqual({"message":"ID not present."});
-//         });
+            //check for status 400 & corresponding message
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({"message":"ID not present."});
+        });
 
-//         it('should return a 400 when the ID requested is wrongly written.', async () => {
-//             //make an update 
-//             const updatedData = {
-//                 id: "1234567890", //Faulty ID
-//                 name: 'Dummy Update',
-//                 email: 'Updatetest@email.com',
-//                 msg: 'This is an updated message'
-//             };
-//             const response = await request(server).put('/messages').send(updatedData);
+        it('should return a 400 when the ID requested is wrongly written.', async () => {
+            //make an update 
+            const updatedData = {
+                id: "1234567890", //Faulty ID
+                name: 'Dummy Update',
+                email: 'Updatetest@email.com',
+                msg: 'This is an updated message'
+            };
+            const response = await request(app).put('/messages').send(updatedData);
 
-//             //check for status 400 & corresponding message
-//             expect(response.status).toBe(400);
-//             expect(response.body).toEqual({"message": "ID not present."});
-//         });
-//     });
-// });
+            //check for status 400 & corresponding message
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({"message": "ID not present."});
+        });
+    });
+});
 
 
