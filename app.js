@@ -34,8 +34,8 @@ const swaggerOptions = {
                 description: "Development Server"
             },
             {
-                url: "http://localhost:4000/",
-                description: "Development Server"
+                url: "https://cute-pear-sheep-slip.cyclic.app/",
+                description: "Deployment Server"
             }
         ],
     },
