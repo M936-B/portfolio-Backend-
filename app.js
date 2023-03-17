@@ -32,6 +32,10 @@ const swaggerOptions = {
             {
                 url: "http://localhost:4000/",
                 description: "Development Server"
+            },
+            {
+                url: "http://localhost:4000/",
+                description: "Development Server"
             }
         ],
     },
@@ -42,7 +46,7 @@ const specs = swaggerJsDoc(swaggerOptions);
 
 
 //BUILT-IN MIDDLEWARE
-app.use(cors()); //Remember to delete this line & uncomment ln46 after devt
+//app.use(cors()); //Remember to delete this line & uncomment ln46 after devt
 //app.use(cors(corsOptions));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(express.json())
