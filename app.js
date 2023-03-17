@@ -5,6 +5,8 @@ const app = express();
 const mongoose = require('mongoose');
 const connectDB = require('./Config/dbConnect');
 connectDB();
+const cors = require('cors');
+const corsOptions = require('./Config/corsOptions');
 const cookieParser = require('cookie-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -40,6 +42,8 @@ const specs = swaggerJsDoc(swaggerOptions);
 
 
 //BUILT-IN MIDDLEWARE
+app.use(cors()); //Remember to delete this line & uncomment ln46 after devt
+//app.use(cors(corsOptions));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
