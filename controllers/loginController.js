@@ -31,7 +31,7 @@ const authorize = async( req, res) => {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
+                expiresIn: '7d',
                 path: '/'
             } //'add secure: true,' in the options when you stop using thunder client
             );
