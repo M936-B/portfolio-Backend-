@@ -13,6 +13,7 @@ const swaggerUi = require('swagger-ui-express');
 const path = require('path');
 //CUSTOM IMPORTS
 const verifyJWT = require('./middleware/verifyJWT');
+const credentials = require('./middleware/credentials');
 const PORT = process.env.PORT;
 
 
@@ -46,8 +47,8 @@ const specs = swaggerJsDoc(swaggerOptions);
 
 
 //BUILT-IN MIDDLEWARE
-app.use(cors()); //Remember to delete this line & uncomment ln46 after devt
-//app.use(cors(corsOptions));
+app.use(credentials);
+app.use(cors(corsOptions));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
