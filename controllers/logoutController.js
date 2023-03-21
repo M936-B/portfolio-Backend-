@@ -5,7 +5,7 @@ const erase = async( req, res) => {
 
     try {
         const cookies = req.cookies;
-        if (!cookies?.refreshToken) return res.sendStatus(404);
+        if (!cookies?.refreshToken) return res.sendStatus(400);
         const refreshToken = cookies.refreshToken;
         
         const bearer = await User.findOne( {refreshToken: refreshToken}).exec();
